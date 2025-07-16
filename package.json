@@ -1,0 +1,53 @@
+{
+  "name": "dropshipping-ai-agent",
+  "version": "1.0.0",
+  "description": "Autonomous dropshipping AI agent based on Vending-Bench architecture",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:integration": "vitest src/integration --run",
+    "test:integration:watch": "vitest src/integration --watch",
+    "test:unit": "vitest --exclude src/integration --run",
+    "test:performance": "vitest src/integration/PerformanceBenchmarks --run",
+    "test:all": "vitest --run",
+    "start": "node dist/index.js",
+    "simulate": "tsx src/runSimulation.ts",
+    "demo": "tsx src/demo.ts",
+    "agent": "tsx src/runAgent.ts",
+    "api": "tsx src/api/server.ts",
+    "api:build": "tsc && node dist/api/server.js"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^0.0.66",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "openai": "^4.67.3",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.9.0",
+    "@types/supertest": "^6.0.3",
+    "@types/uuid": "^10.0.0",
+    "supertest": "^7.1.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.4"
+  },
+  "keywords": [
+    "ai",
+    "dropshipping",
+    "autonomous",
+    "ecommerce",
+    "agent"
+  ],
+  "author": "Dropshipping AI Agent",
+  "license": "MIT"
+}

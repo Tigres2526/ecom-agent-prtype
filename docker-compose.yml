@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  dropshipping-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dropshipping-ai-agent
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - GROK_API_KEY=${GROK_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FACEBOOK_APP_ID=${FACEBOOK_APP_ID}
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
+      - FACEBOOK_ACCESS_TOKEN=${FACEBOOK_ACCESS_TOKEN}
+      - TIKTOK_APP_ID=${TIKTOK_APP_ID}
+      - TIKTOK_APP_SECRET=${TIKTOK_APP_SECRET}
+      - TIKTOK_ACCESS_TOKEN=${TIKTOK_ACCESS_TOKEN}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REFRESH_TOKEN=${GOOGLE_REFRESH_TOKEN}
+      - SHOPIFY_API_KEY=${SHOPIFY_API_KEY}
+      - SHOPIFY_API_SECRET=${SHOPIFY_API_SECRET}
+      - BIGCOMMERCE_CLIENT_ID=${BIGCOMMERCE_CLIENT_ID}
+      - BIGCOMMERCE_ACCESS_TOKEN=${BIGCOMMERCE_ACCESS_TOKEN}
+      - BIGCOMMERCE_STORE_HASH=${BIGCOMMERCE_STORE_HASH}
+      - LOG_LEVEL=info
+      - SIMULATION_AUTO_START=${SIMULATION_AUTO_START:-false}
+      - INITIAL_CAPITAL=${INITIAL_CAPITAL:-500}
+      - MAX_DAYS=${MAX_DAYS:-200}
+    volumes:
+      - ./logs:/app/logs
+      - ./audit:/app/audit
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - agent-network
+
+  # Optional: Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: dropshipping-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - agent-network
+    profiles:
+      - monitoring
+
+  # Optional: Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dropshipping-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - agent-network
+    profiles:
+      - monitoring
+
+networks:
+  agent-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
