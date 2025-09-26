@@ -1,6 +1,6 @@
-# Dropshipping AI Agent
+Ecom Agent
 
-An autonomous AI-powered agent that manages dropshipping businesses, making intelligent decisions about product research, campaign management, and financial optimization. Built with TypeScript and powered by Grok-4.
+An autonomous AI-powered agent that manages ecom businesses, making intelligent decisions about product research, campaign management, and financial optimization. Built with TypeScript and powered by Grok-4.
 
 ## Features
 
